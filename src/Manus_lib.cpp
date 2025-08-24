@@ -2,6 +2,6 @@
 #include <cuda_runtime.h>
 #include <torch/extension.h>
 
-#include "SDKClient.cpp"
-#include "Start_manus.cpp"
-#include "ClientPlatformSpecific.cpp"
+#include "ManusSDK/Manus_source/SDKClient.cpp"
+#include "ManusSDK/Manus_source/Start_manus.cpp"
+#include "ManusSDK/Manus_source/ClientPlatformSpecific.cpp"
