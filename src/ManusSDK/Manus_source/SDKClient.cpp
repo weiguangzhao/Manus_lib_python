@@ -78,26 +78,23 @@ ClientReturnCode SDKClient::Get_Right_Hand_DOF_Data(float *right_hand_dof)
         }
         case ClientState::ClientState_LookingForHosts:
         {
-            t_Result = LookingForHosts();
-            if (t_Result != ClientReturnCode::ClientReturnCode_Success &&
-                t_Result != ClientReturnCode::ClientReturnCode_FailedToFindHosts) {
-                return t_Result;
-            }
+            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
         } break;
         case ClientState::ClientState_NoHostsFound:
         {
-            t_Result = NoHostsFound();
-            if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
         } break;
         case ClientState::ClientState_PickingHost:
         {
-            t_Result = PickingHost();
-            if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
         } break;
         case ClientState::ClientState_ConnectingToCore:
         {
-            t_Result = ConnectingToCore();
-            if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
         } break;
         case ClientState::ClientState_DisplayingData:
         {
@@ -120,7 +117,6 @@ ClientReturnCode SDKClient::Get_Right_Hand_DOF_Data(float *right_hand_dof)
                 }
                 printf("%f", right_hand_dof[0]);
             }
-
             else
             {
                 t_Result = m_CurrentInteraction();
@@ -155,8 +151,6 @@ ClientReturnCode SDKClient::Get_Right_Hand_DOF_Data(float *right_hand_dof)
 
         std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
-
-
 	return ClientReturnCode::ClientReturnCode_Success;
 }
 
@@ -663,6 +657,59 @@ ClientReturnCode SDKClient::InitializeSDK()
 		ClientLog::error("Failed to initialize the Manus Core SDK coordinate system. The value returned was {}.", (int32_t)t_InitializeResult);
 		return ClientReturnCode::ClientReturnCode_FailedToInitialize;
 	}
+
+	ClearConsole();
+	ClientReturnCode t_Result;
+    while (!m_RequestedExit)
+	{
+	    m_PreviousState = m_State;
+	    UpdateInput();
+        switch (m_State)
+        {
+            case ClientState::ClientState_Starting:
+            {
+                ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+                return ClientReturnCode::ClientReturnCode_FailedToInitialize;
+            }
+            case ClientState::ClientState_LookingForHosts:
+            {
+                t_Result = LookingForHosts();
+                if (t_Result != ClientReturnCode::ClientReturnCode_Success &&
+                    t_Result != ClientReturnCode::ClientReturnCode_FailedToFindHosts) {
+                    return t_Result;
+                }
+            } break;
+            case ClientState::ClientState_NoHostsFound:
+            {
+                t_Result = NoHostsFound();
+                if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+            } break;
+            case ClientState::ClientState_PickingHost:
+            {
+                t_Result = PickingHost();
+                if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+            } break;
+            case ClientState::ClientState_ConnectingToCore:
+            {
+                t_Result = ConnectingToCore();
+                if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+            } break;
+        }
+
+        if (m_State==ClientState::ClientState_DisplayingData)
+        {
+            m_RequestedExit = true;
+            ClientLog::print("Ready for collect data.");
+        }
+
+        if (GetKeyDown(VK_ESCAPE))
+		{
+			ClientLog::print("Pressed escape, so the client will now close.");
+
+			m_RequestedExit = true;
+		}
+    }
+    m_RequestedExit = false;
 
 	return ClientReturnCode::ClientReturnCode_Success;
 }
