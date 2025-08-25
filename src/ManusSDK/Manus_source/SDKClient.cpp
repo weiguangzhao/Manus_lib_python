@@ -493,33 +493,9 @@ void SDKClient::AdvanceConsolePosition(short int p_Y)
 /// This needs to be done before any of the other SDK functions can be used.
 ClientReturnCode SDKClient::InitializeSDK()
 {
-	ClientLog::print("Select what mode you would like to start in (and press enter to submit)");
-	ClientLog::print("[1] Core Integrated - This will run standalone without the need for a MANUS Core connection");
-	ClientLog::print("[2] Core Local - This will connect to a MANUS Core running locally on your machine");
-	ClientLog::print("[3] Core Remote - This will search for a MANUS Core running locally on your network");
-	std::string t_ConnectionTypeInput;
-	std::cin >> t_ConnectionTypeInput;
-
-	switch (t_ConnectionTypeInput[0])
-	{
-	case '1':
-		m_ConnectionType = ConnectionType::ConnectionType_Integrated;
-		m_State = ClientState::ClientState_ConnectingToCore;
-		break;
-	case '2':
-		m_ConnectionType = ConnectionType::ConnectionType_Local;
-		m_State = ClientState::ClientState_LookingForHosts;
-		break;
-	case '3':
-		m_ConnectionType = ConnectionType::ConnectionType_Remote;
-		m_State = ClientState::ClientState_LookingForHosts;
-		break;
-	default:
-		m_ConnectionType = ConnectionType::ConnectionType_Invalid;
-		m_State = ClientState::ClientState_Starting;
-		ClientLog::print("Invalid input, try again");
-		return InitializeSDK();
-	}
+	ClientLog::print("a MANUS Core running locally on your network");
+    m_ConnectionType = ConnectionType::ConnectionType_Remote;
+    m_State = ClientState::ClientState_LookingForHosts;
 
 	// Invalid connection type detected
 	if (m_ConnectionType == ConnectionType::ConnectionType_Invalid
@@ -832,6 +808,9 @@ ClientReturnCode SDKClient::PickingHost()
 			break;
 		}
 	}
+
+//	m_HostToConnectTo = 0;
+//	m_State = ClientState::ClientState_ConnectingToCore;
 
 	if (GetKeyDown('R'))
 	{

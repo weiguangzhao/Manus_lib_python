@@ -11,14 +11,13 @@
 /// ClientReturnCode_UnrecognizedStateEncountered if un unrecognized state was encountered,
 /// ClientReturnCode_FailedToShutDown if it failed to shut down the SDK wrapper,
 /// ClientReturnCode_FailedToRestart if the SDK was not able to reconnect to Core.
-int start_manus()
-{
-    printf("test");
-	ManusSDK::ClientLog::print("Starting SDK client!");
-	
-	ClientReturnCode t_Result;
-	SDKClient t_SDKClient;
 
+ClientReturnCode t_Result;
+SDKClient t_SDKClient;
+
+int init_manus_sdk()
+{
+    ManusSDK::ClientLog::print("Starting SDK client!");
 	t_Result = t_SDKClient.Initialize();
 
 	if (t_Result != ClientReturnCode::ClientReturnCode_Success)
@@ -27,14 +26,23 @@ int start_manus()
 		return static_cast<int>(t_Result); // Returning initialise failure state
 	}
 	ManusSDK::ClientLog::print("SDK client is initialized.");
+	return static_cast<int>(t_Result);
+}
 
+int start_manus_sdk()
+{
 	t_Result = t_SDKClient.Run();
 	if (t_Result != ClientReturnCode::ClientReturnCode_Success)
 	{
 		t_SDKClient.ShutDown();
 		return static_cast<int>(t_Result); // Returning run failure state
 	}
+	return static_cast<int>(t_Result);
+}
 
+
+int close_manus_sdk()
+{
 	// loop is over. disconnect it all
 	ManusSDK::ClientLog::print("SDK client is done, shutting down.");
 	t_Result = t_SDKClient.ShutDown();

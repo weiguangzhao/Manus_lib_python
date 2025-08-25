@@ -1,3 +1,5 @@
 #include "ClientLogging.hpp"
 #include "SDKClient.hpp"
-int start_manus();
+int init_manus_sdk();
+int start_manus_sdk();
+int close_manus_sdk();
