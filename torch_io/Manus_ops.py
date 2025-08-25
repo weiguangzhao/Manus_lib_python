@@ -11,7 +11,9 @@ if __name__ == '__main__':
     dof_num = 20
     right_hand_dof = torch.zeros(dof_num, dtype=torch.float32).contiguous() +12.0
     assert right_hand_dof.is_contiguous()
-    Manus_return = Manus_lib.start_manus_sdk(right_hand_dof)
+    while True:
+        Manus_return = Manus_lib.start_manus_sdk(right_hand_dof)
+        print(right_hand_dof)
     #
     print("complete start")
     Manus_return = Manus_lib.close_manus_sdk()

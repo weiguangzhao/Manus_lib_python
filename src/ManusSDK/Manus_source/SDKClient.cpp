@@ -59,98 +59,71 @@ ClientReturnCode SDKClient::Get_Right_Hand_DOF_Data(float *right_hand_dof)
     ClearConsole();
 	ClientReturnCode t_Result;
     // in this example SDK Client we have several phases during our main loop to make sure the SDK is in the right state to work.
-    while (!m_RequestedExit)
-	{
-	    if (m_ConsoleClearTickCount >= 100 || m_State != m_PreviousState)
-		{
-			ClearConsole();
-
-			m_ConsoleClearTickCount = 0;
-		}
-        m_PreviousState = m_State;
-	    UpdateInput();
-        switch (m_State)
-        {
-        case ClientState::ClientState_Starting:
-        {
-            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
-            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
-        }
-        case ClientState::ClientState_LookingForHosts:
-        {
-            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
-            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
-        } break;
-        case ClientState::ClientState_NoHostsFound:
-        {
-            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
-            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
-        } break;
-        case ClientState::ClientState_PickingHost:
-        {
-            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
-            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
-        } break;
-        case ClientState::ClientState_ConnectingToCore:
-        {
-            ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
-            return ClientReturnCode::ClientReturnCode_FailedToInitialize;
-        } break;
-        case ClientState::ClientState_DisplayingData:
-        {
-            printf("Display");
-            UpdateBeforeDisplayingData();
-            if (m_CurrentInteraction == nullptr)
-            {
-                bool p_Left = false;
-                int t_DataOffset = 0;
-                int dof_idx =0;
-                if (!p_Left)t_DataOffset = 20;
-                for (unsigned int t_FingerNumber = 0; t_FingerNumber < NUM_FINGERS_ON_HAND; t_FingerNumber++)
-                {
-                    right_hand_dof[dof_idx] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset], 2);
-                    right_hand_dof[dof_idx+1] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset+1], 2);
-                    right_hand_dof[dof_idx+2] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset+2], 2);
-                    right_hand_dof[dof_idx+3] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset+3], 2);
-                    t_DataOffset += 4;
-                    dof_idx+=4;
-                }
-                printf("%f", right_hand_dof[0]);
-            }
-            else
-            {
-                t_Result = m_CurrentInteraction();
-            }
-            if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
-        } break;
-        case ClientState::ClientState_Disconnected:
-        {
-            t_Result = DisconnectedFromCore();
-            if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
-        }break;
-        default:
-        {
-            ClientLog::error("Encountered the unrecognized state {}.", static_cast<int>(m_State));
-            return ClientReturnCode::ClientReturnCode_UnrecognizedStateEncountered;
-        }
-        } // switch(m_State)
-
-        if (GetKeyDown(VK_ESCAPE))
-		{
-			ClientLog::print("Pressed escape, so the client will now close.");
-
-			m_RequestedExit = true;
-		}
-		if (m_ConsoleClearTickCount == 0) //prevents text from intersecting.
-		{
-			//Logging
-			PrintLogs();
-		}
-
-		m_ConsoleClearTickCount++;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    switch (m_State)
+    {
+    case ClientState::ClientState_Starting:
+    {
+        ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+        return ClientReturnCode::ClientReturnCode_FailedToInitialize;
     }
+    case ClientState::ClientState_LookingForHosts:
+    {
+        ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+        return ClientReturnCode::ClientReturnCode_FailedToInitialize;
+    } break;
+    case ClientState::ClientState_NoHostsFound:
+    {
+        ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+        return ClientReturnCode::ClientReturnCode_FailedToInitialize;
+    } break;
+    case ClientState::ClientState_PickingHost:
+    {
+        ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+        return ClientReturnCode::ClientReturnCode_FailedToInitialize;
+    } break;
+    case ClientState::ClientState_ConnectingToCore:
+    {
+        ClientLog::error("Should not get to this state.", static_cast<int>(m_State));
+        return ClientReturnCode::ClientReturnCode_FailedToInitialize;
+    } break;
+    case ClientState::ClientState_DisplayingData:
+    {
+        UpdateBeforeDisplayingData();
+        if (m_CurrentInteraction == nullptr)
+        {
+            bool p_Left = false;
+            int t_DataOffset = 0;
+            int dof_idx =0;
+            if (!p_Left)t_DataOffset = 20;
+            for (unsigned int t_FingerNumber = 0; t_FingerNumber < NUM_FINGERS_ON_HAND; t_FingerNumber++)
+            {
+                right_hand_dof[dof_idx] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset], 2);
+                right_hand_dof[dof_idx+1] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset+1], 2);
+                right_hand_dof[dof_idx+2] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset+2], 2);
+                right_hand_dof[dof_idx+3] = RoundFloatValue(m_RightGloveErgoData.data[t_DataOffset+3], 2);
+                t_DataOffset += 4;
+                dof_idx+=4;
+            }
+        }
+        else
+        {
+            t_Result = m_CurrentInteraction();
+        }
+        if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+    } break;
+    case ClientState::ClientState_Disconnected:
+    {
+        t_Result = DisconnectedFromCore();
+        if (t_Result != ClientReturnCode::ClientReturnCode_Success) { return t_Result; }
+    }break;
+    default:
+    {
+        ClientLog::error("Encountered the unrecognized state {}.", static_cast<int>(m_State));
+        return ClientReturnCode::ClientReturnCode_UnrecognizedStateEncountered;
+    }
+    } // switch(m_State)
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
 	return ClientReturnCode::ClientReturnCode_Success;
 }
 
