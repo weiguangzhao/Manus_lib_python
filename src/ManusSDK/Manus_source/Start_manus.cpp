@@ -29,15 +29,17 @@ int init_manus_sdk()
 	return static_cast<int>(t_Result);
 }
 
-int start_manus_sdk()
+float start_manus_sdk(at::Tensor right_hand_dof_tensor)
 {
-	t_Result = t_SDKClient.Run();
+    float *right_hand_dof = right_hand_dof_tensor.data<float>();
+	t_Result = t_SDKClient.Get_Right_Hand_DOF_Data(right_hand_dof);
+	//t_Result = t_SDKClient.Run(right_hand_dof);
 	if (t_Result != ClientReturnCode::ClientReturnCode_Success)
 	{
 		t_SDKClient.ShutDown();
-		return static_cast<int>(t_Result); // Returning run failure state
+		return static_cast<float>(t_Result); // Returning run failure state
 	}
-	return static_cast<int>(t_Result);
+	return static_cast<float>(t_Result);
 }
 
 

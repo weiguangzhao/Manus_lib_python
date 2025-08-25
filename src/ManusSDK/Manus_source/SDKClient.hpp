@@ -136,8 +136,9 @@ public:
 	~SDKClient();
 
 	ClientReturnCode Initialize();
-	ClientReturnCode Run();
+	ClientReturnCode Run(float *right_hand_dof);
 	ClientReturnCode ShutDown();
+	ClientReturnCode Get_Right_Hand_DOF_Data(float *right_hand_dof);
 
 	//Callbacks
 	static void OnConnectedCallback(const ManusHost* const p_Host);
