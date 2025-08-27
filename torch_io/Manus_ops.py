@@ -4,17 +4,10 @@ import Manus_lib
 
 
 if __name__ == '__main__':
-
-    Manus_return = Manus_lib.init_manus_sdk()
-    print("complete init")
-
     dof_num = 20
-    right_hand_dof = torch.zeros(dof_num, dtype=torch.float32).contiguous() +12.0
+    right_hand_dof = torch.ones(dof_num, dtype=torch.float32).contiguous()
     assert right_hand_dof.is_contiguous()
-    while True:
-        Manus_return = Manus_lib.start_manus_sdk(right_hand_dof)
-        print(right_hand_dof)
-    #
-    print("complete start")
-    Manus_return = Manus_lib.close_manus_sdk()
-    print(right_hand_dof)
+
+    init_return_code = Manus_lib.init_manus_sdk() #开启SDK
+    strat_return_code = Manus_lib.start_manus_sdk(right_hand_dof) # 获取当前帧数据到变量right_hand_dof
+    close_return_code = Manus_lib.close_manus_sdk() #关闭SDK
